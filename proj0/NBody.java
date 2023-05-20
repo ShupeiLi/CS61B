@@ -41,7 +41,7 @@ public class NBody {
             }
             for (int idx = 0; idx < planets.length; idx++) {
                 Planet planet = planets[idx];
-                planet.update(time, xForces[idx], yForces[idx]);
+                planet.update(dt, xForces[idx], yForces[idx]);
             }
             StdDraw.clear();
             StdDraw.picture(0, 0, "images/starfield.jpg");
