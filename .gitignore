@@ -1,4 +1,5 @@
 .idea/
+*/.idea/.gitignore
 */out/
 */target/
 # Compiled class file
