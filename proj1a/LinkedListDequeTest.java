@@ -36,7 +36,7 @@ public class LinkedListDequeTest {
 	public static void addIsEmptySizeTest() {
 		System.out.println("Running add/isEmpty/Size test.");
 		System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
-		/*
+
 		LinkedListDeque<String> lld1 = new LinkedListDeque<String>();
 
 		boolean passed = checkEmpty(true, lld1.isEmpty());
@@ -58,7 +58,6 @@ public class LinkedListDequeTest {
 		lld1.printDeque();
 
 		printTestStatus(passed);
-		*/
 	}
 
 	/** Adds an item, then removes an item, and ensures that dll is empty afterwards. */
@@ -67,7 +66,7 @@ public class LinkedListDequeTest {
 		System.out.println("Running add/remove test.");
 
 		System.out.println("Make sure to uncomment the lines below (and delete this print statement).");
-		/*
+
 		LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
 		// should be empty 
 		boolean passed = checkEmpty(true, lld1.isEmpty());
@@ -81,12 +80,37 @@ public class LinkedListDequeTest {
 		passed = checkEmpty(true, lld1.isEmpty()) && passed;
 
 		printTestStatus(passed);
-		*/
+	}
+
+	public static void testExample1() {
+		LinkedListDeque<Integer> lst = new LinkedListDeque<>();
+		lst.printDeque();
+		lst.addFirst(2);
+		lst.addFirst(1);
+		lst.addLast(3);
+		lst.removeFirst();
+		lst.printDeque();
+		lst.removeLast();
+		lst.printDeque();
+	}
+
+	public static void testExample2() {
+		ArrayDeque<Integer> arr = new ArrayDeque<>();
+		arr.addFirst(1);
+		arr.addLast(2);
+		arr.addLast(3);
+		arr.printDeque();
+		arr.removeLast();
+		arr.removeFirst();
+		arr.printDeque();
+		System.out.println(arr.size());
 	}
 
 	public static void main(String[] args) {
 		System.out.println("Running tests.\n");
 		addIsEmptySizeTest();
 		addRemoveTest();
+		testExample1();
+		testExample2();
 	}
 } 
