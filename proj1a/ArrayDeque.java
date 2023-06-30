@@ -15,13 +15,23 @@ public class ArrayDeque<T> {
             newArray = (T[]) new Object[array.length / 2];
         }
         int pointer = 0;
-        for (int i = start + 1; i < array.length; i++) {
-            newArray[pointer] = array[i];
-            pointer++;
-        }
-        for (int i = 0; i < end; i++) {
-            newArray[pointer] = array[i];
-            pointer++;
+        if (start + 1 > end - 1) {
+            int count = nItems;
+            for (int i = start + 1; i < array.length && count > 0; i++) {
+                newArray[pointer] = array[i];
+                pointer++;
+                count--;
+            }
+            for (int i = 0; i < end && count > 0; i++) {
+                newArray[pointer] = array[i];
+                pointer++;
+                count--;
+            }
+        } else {
+            for (int i = start + 1; i < end; i++) {
+                newArray[pointer] = array[i];
+                pointer++;
+            }
         }
         array = newArray;
         start = array.length - 1;
@@ -75,7 +85,7 @@ public class ArrayDeque<T> {
             return null;
         } else {
             if ((start + 1) == array.length) {
-                start = 0;
+                start = end + 1;
             } else {
                 start++;
             }
@@ -93,7 +103,7 @@ public class ArrayDeque<T> {
             return null;
         } else {
             if (end == 0) {
-                end = array.length - 1;
+                end = start - 1;
             } else {
                 end--;
             }
