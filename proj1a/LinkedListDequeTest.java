@@ -84,27 +84,14 @@ public class LinkedListDequeTest {
         LinkedListDeque<Integer> lst = new LinkedListDeque<>();
         lst.printDeque();
         lst.addFirst(2);
-        lst.printDeque();
         lst.removeLast();
         lst.printDeque();
     }
 
     public static void testExample2() {
         ArrayDeque<Integer> arr = new ArrayDeque<>();
-        arr.addFirst(0);
-        arr.removeLast();
-        arr.addLast(2);
-        arr.removeLast();
-        arr.addFirst(4);
-        arr.addFirst(5);
-        arr.addFirst(6);
-        arr.addFirst(7);
-        arr.addFirst(8);
-        arr.addFirst(9);
-        arr.printDeque();
-        arr.removeLast();
-        arr.printDeque();
-        System.out.println(arr.size());
+        arr.addLast(1);
+        System.out.println(arr.removeFirst());
     }
 
     public static void main(String[] args) {

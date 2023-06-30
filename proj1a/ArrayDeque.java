@@ -85,7 +85,7 @@ public class ArrayDeque<T> {
             return null;
         } else {
             if ((start + 1) == array.length) {
-                start = end + 1;
+                start = 0;
             } else {
                 start++;
             }
@@ -103,7 +103,7 @@ public class ArrayDeque<T> {
             return null;
         } else {
             if (end == 0) {
-                end = start - 1;
+                end = array.length - 1;
             } else {
                 end--;
             }
