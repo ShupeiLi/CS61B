@@ -1,4 +1,5 @@
 public class ArrayDeque<T> {
+    private static final int ARR_LIMIT = 16;
     private T[] array = (T[]) new Object[8];
     private int start = array.length - 1;
     private int end = 0;
@@ -28,7 +29,7 @@ public class ArrayDeque<T> {
     }
 
     public void addFirst(T item) {
-        if (start == end) {
+        if ((start == end) || (start == 0)) {
             resizeArray(true);
         }
         array[start] = item;
@@ -37,7 +38,7 @@ public class ArrayDeque<T> {
     }
 
     public void addLast(T item) {
-        if (start == end) {
+        if ((start == end) || (end == (array.length - 1))) {
             resizeArray(true);
         }
         array[end] = item;
@@ -80,7 +81,7 @@ public class ArrayDeque<T> {
             }
             T temp = array[start];
             nItems--;
-            if (array.length > 16 && (((double) nItems / array.length) < 0.25)) {
+            if (array.length > ARR_LIMIT && (((double) nItems / array.length) < 0.25)) {
                 resizeArray(false);
             }
             return temp;
@@ -98,7 +99,7 @@ public class ArrayDeque<T> {
             }
             T temp = array[end];
             nItems--;
-            if (array.length > 16 && (((double) nItems / array.length) < 0.25)) {
+            if (array.length > ARR_LIMIT && (((double) nItems / array.length) < 0.25)) {
                 resizeArray(false);
             }
             return temp;
