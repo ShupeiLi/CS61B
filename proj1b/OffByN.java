@@ -1,5 +1,5 @@
 public class OffByN implements CharacterComparator {
-    public int offValue;
+    private int offValue;
 
     public OffByN(int offValue) {
         this.offValue = offValue;
