@@ -50,10 +50,10 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         }
         T temp = rb[first];
         this.fillCount--;
-        if (first - 1 < 0) {
-            first = this.capacity - 1;
+        if (first + 1 >= this.capacity) {
+            first = 0;
         } else {
-            first--;
+            first++;
         }
         return temp;
     }
