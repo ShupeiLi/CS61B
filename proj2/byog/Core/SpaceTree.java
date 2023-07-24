@@ -33,7 +33,7 @@ public class SpaceTree implements PositionRecord {
 
     /* Sample positions on boarders of the building to create entrances. */
     private void selectDoor(Tree tree, TETile[][] world) {
-        double P = 0.1;
+        double P = 0.5;
         int length = tree.length;
         int width = tree.width;
         Position startPoint = tree.pos;
@@ -231,7 +231,7 @@ public class SpaceTree implements PositionRecord {
 
         while (trial < 200) {
             int count = 0;
-            while (count < 1000) {
+            while (count < 100) {
                 selectDoor(parent, world);
                 Position doorPosition = parent.doors[parent.doors.length - 1];
                 Position newPos = new Position(doorPosition.xCoordinate + doorPosition.xDirection,

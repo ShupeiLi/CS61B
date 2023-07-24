@@ -15,13 +15,12 @@ public class Game implements PositionRecord {
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
-        /*
         ter.initialize(WIDTH, HEIGHT);
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (TETile[] tiles : world) {
             Arrays.fill(tiles, Tileset.NOTHING);
         }
-        SpaceTree tree = new SpaceTree(55);
+        SpaceTree tree = new SpaceTree(23416);
         tree.mazeGenerator(world);
         for (int i = HEIGHT - 1; i >=0; i--) {
             for (int j = 0; j < WIDTH; j++) {
@@ -30,7 +29,6 @@ public class Game implements PositionRecord {
             System.out.println();
         }
         ter.renderFrame(world);
-        */
     }
 
     /**
