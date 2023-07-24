@@ -3,10 +3,10 @@ package byog.Core;
 import byog.TileEngine.TETile;
 
 public class Position implements PositionRecord {
-    public int xCoordinate;
-    public int yCoordinate;
-    public int xDirection;
-    public int yDirection;
+    int xCoordinate;
+    int yCoordinate;
+    int xDirection;
+    int yDirection;
 
     public Position(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;

@@ -5,6 +5,8 @@ import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Game implements PositionRecord {
     TERenderer ter = new TERenderer();
@@ -44,23 +46,23 @@ public class Game implements PositionRecord {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
-        // and return a 2D tile representation of the world that would have been
-        // drawn if the same inputs had been given to playWithKeyboard().
-
-        long seed = Long.parseLong(input);
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (TETile[] tiles : world) {
             Arrays.fill(tiles, Tileset.NOTHING);
         }
+
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(input);
+        String seedStr;
+        if (matcher.find()) {
+            seedStr = input.substring(matcher.start(), matcher.end());
+        } else {
+            throw new RuntimeException("Input should contain a random seed.");
+        }
+        long seed = Long.parseLong(seedStr);
+
         SpaceTree tree = new SpaceTree(seed);
         tree.mazeGenerator(world);
-        for (int i = HEIGHT - 1; i >=0; i--) {
-            for (int j = 0; j < WIDTH; j++) {
-                System.out.print(world[j][i].character());
-            }
-            System.out.println();
-        }
         return world;
     }
 }

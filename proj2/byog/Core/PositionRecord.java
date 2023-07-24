@@ -1,7 +1,5 @@
 package byog.Core;
 
-import byog.TileEngine.TETile;
-
 public interface PositionRecord {
     /* Feel free to change the width and height. */
     int WIDTH = 50;

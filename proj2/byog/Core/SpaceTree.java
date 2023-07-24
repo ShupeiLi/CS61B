@@ -16,15 +16,15 @@ public class SpaceTree implements PositionRecord {
     }
 
     private class Tree {
-        public Position pos;
-        public Position[] doors = new Position[2];
-        public int doorsPtr = 0;
-        public Tree parent = null;
+        Position pos;
+        Position[] doors = new Position[2];
+        int doorsPtr = 0;
+        Tree parent = null;
         // public Tree siblings = null;
-        public Tree child = null;
-        public int length, width;
-        public boolean isRoom;
-        public boolean fail = true;
+        Tree child = null;
+        int length, width;
+        boolean isRoom;
+        boolean fail = true;
 
         Tree(Position pos) {
             this.pos = pos;
@@ -33,25 +33,28 @@ public class SpaceTree implements PositionRecord {
 
     /* Sample positions on boarders of the building to create entrances. */
     private void selectDoor(Tree tree, TETile[][] world) {
-        double DOOR_P = 0.1;
+        double P = 0.1;
         int length = tree.length;
         int width = tree.width;
         Position startPoint = tree.pos;
         while (tree.doorsPtr < tree.doors.length) {
             for (int x = startPoint.xCoordinate; x < startPoint.xCoordinate + length; x++) {
                 for (int y = startPoint.yCoordinate; y < startPoint.yCoordinate + width; y++) {
-                    if (((x == startPoint.xCoordinate) || (x == startPoint.xCoordinate + length - 1) ||
-                            (y == startPoint.yCoordinate) || (y == startPoint.yCoordinate + width - 1)) &&
-                            (world[x][y] != Tileset.FLOOR)) {
+                    if (((x == startPoint.xCoordinate)
+                            || (x == startPoint.xCoordinate + length - 1)
+                            || (y == startPoint.yCoordinate)
+                            || (y == startPoint.yCoordinate + width - 1))
+                            && (world[x][y] != Tileset.FLOOR)) {
                         Random rand = new Random(seed + randomOffset);
                         randomOffset++;
                         boolean cornerChecker = true;
-                        boolean selectedPosition = RandomUtils.bernoulli(rand, DOOR_P);
+                        boolean selectedPosition = RandomUtils.bernoulli(rand, P);
 
-                        if ((x == startPoint.xCoordinate && y == startPoint.yCoordinate) ||
-                                (x == startPoint.xCoordinate && y == startPoint.yCoordinate + width - 1) ||
-                                (x == startPoint.xCoordinate + length - 1 && y == startPoint.yCoordinate) ||
-                                (x == startPoint.xCoordinate + length - 1 && y == startPoint.yCoordinate + width - 1)) {
+                        if ((x == startPoint.xCoordinate && y == startPoint.yCoordinate)
+                                || (x == startPoint.xCoordinate && y == startPoint.yCoordinate + width - 1)
+                                || (x == startPoint.xCoordinate + length - 1 && y == startPoint.yCoordinate)
+                                || (x == startPoint.xCoordinate + length - 1
+                                && y == startPoint.yCoordinate + width - 1)) {
                             cornerChecker = false;
                         }
                         if ((x - 1 < 0) || (x + 1 > WIDTH) || (y - 1 < 0) || (y + 1 > HEIGHT)) {
@@ -213,11 +216,6 @@ public class SpaceTree implements PositionRecord {
                 tree.width = width;
                 tree.fail = false;
                 break;
-            } else {
-                if (door.xDirection != 0) {
-                    System.out.println("Start: (" + tree.pos.xCoordinate + ", " + tree.pos.yCoordinate +
-                            "); length: " + length + "; width: " + width);
-                }
             }
             budget--;
         }

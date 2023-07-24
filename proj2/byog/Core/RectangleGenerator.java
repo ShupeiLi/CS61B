@@ -8,10 +8,10 @@ public class RectangleGenerator {
         for (int x = startPoint.xCoordinate; x < startPoint.xCoordinate + length; x++) {
             for (int y = startPoint.yCoordinate; y < startPoint.yCoordinate + width; y++) {
                 Position pos = new Position(x, y);
-                if ((x == startPoint.xCoordinate) ||
-                        (x == startPoint.xCoordinate + length - 1) ||
-                        (y == startPoint.yCoordinate) ||
-                        (y == startPoint.yCoordinate + width - 1)) {
+                if ((x == startPoint.xCoordinate)
+                        || (x == startPoint.xCoordinate + length - 1)
+                        || (y == startPoint.yCoordinate)
+                        || (y == startPoint.yCoordinate + width - 1)) {
                     pos.addBuilding(world, Tileset.WALL);
                 } else {
                     pos.addBuilding(world, Tileset.FLOOR);
@@ -21,8 +21,8 @@ public class RectangleGenerator {
     }
 
     public static boolean blankArea(int length, int width, Position startPoint) {
-        if (startPoint.xCoordinate + length >= startPoint.WIDTH ||
-                startPoint.yCoordinate + width >= startPoint.HEIGHT) {
+        if (startPoint.xCoordinate + length >= startPoint.WIDTH
+                || startPoint.yCoordinate + width >= startPoint.HEIGHT) {
             return false;
         }
         for (int x = startPoint.xCoordinate; x < startPoint.xCoordinate + length; x++) {
