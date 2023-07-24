@@ -2,17 +2,33 @@ package byog.Core;
 
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
+import byog.TileEngine.Tileset;
 
-public class Game {
+import java.util.Arrays;
+
+public class Game implements PositionRecord {
     TERenderer ter = new TERenderer();
-    /* Feel free to change the width and height. */
-    public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
+        /*
+        ter.initialize(WIDTH, HEIGHT);
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        for (TETile[] tiles : world) {
+            Arrays.fill(tiles, Tileset.NOTHING);
+        }
+        SpaceTree tree = new SpaceTree(55);
+        tree.mazeGenerator(world);
+        for (int i = HEIGHT - 1; i >=0; i--) {
+            for (int j = 0; j < WIDTH; j++) {
+                System.out.print(world[j][i].character());
+            }
+            System.out.println();
+        }
+        ter.renderFrame(world);
+        */
     }
 
     /**
@@ -32,7 +48,19 @@ public class Game {
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        long seed = Long.parseLong(input);
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        for (TETile[] tiles : world) {
+            Arrays.fill(tiles, Tileset.NOTHING);
+        }
+        SpaceTree tree = new SpaceTree(seed);
+        tree.mazeGenerator(world);
+        for (int i = HEIGHT - 1; i >=0; i--) {
+            for (int j = 0; j < WIDTH; j++) {
+                System.out.print(world[j][i].character());
+            }
+            System.out.println();
+        }
+        return world;
     }
 }
