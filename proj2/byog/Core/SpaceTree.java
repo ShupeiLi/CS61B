@@ -229,9 +229,9 @@ public class SpaceTree implements PositionRecord {
         parent.doorsPtr++;
         int trial = 0;
 
-        while (trial < 200) {
+        while (trial < 20) {
             int count = 0;
-            while (count < 100) {
+            while (count < 10) {
                 selectDoor(parent, world);
                 Position doorPosition = parent.doors[parent.doors.length - 1];
                 Position newPos = new Position(doorPosition.xCoordinate + doorPosition.xDirection,
