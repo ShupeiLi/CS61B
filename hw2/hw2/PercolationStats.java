@@ -7,29 +7,18 @@ public class PercolationStats {
     private final PercolationFactory pf;
     private final int N;
     private final int T;
-    private double[] results;
-
-    // Convert an integer into a coordinate
-    private int[] int2Coordinate(int num) {
-        int temp = num - 1;
-        int row = temp / N;
-        int col = temp % N;
-        return new int[]{row, col};
-    }
+    private final double[] results;
 
     // Conduct one experiment util the system percolates.
     private double oneExperiment() {
         Percolation grid = pf.make(N);
-        int[] index = new int[N * N];
-        for (int i = 1; i <= N * N; i++) {
-            index[i - 1] = i;
-        }
-        int ptr = 0;
-        while (!grid.percolates() && ptr < index.length) {
-            StdRandom.shuffle(index, ptr, index.length);
-            int[] coordinate = int2Coordinate(index[ptr]);
-            ptr++;
-            grid.open(coordinate[0], coordinate[1]);
+        int row, col;
+        while (!grid.percolates()) {
+            row = StdRandom.uniform(N);
+            col = StdRandom.uniform(N);
+            if (!grid.isOpen(row, col)) {
+                grid.open(row, col);
+            }
         }
         return ((double) grid.numberOfOpenSites()) / (N * N);
     }

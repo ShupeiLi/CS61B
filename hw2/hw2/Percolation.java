@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 public class Percolation {
     private final WeightedQuickUnionUF gridUnion;
+    private final WeightedQuickUnionUF gridBackup;
     private final boolean[] openArr;
     private final int arr;
     private int numOfOpen;
@@ -31,11 +32,14 @@ public class Percolation {
             throw new IllegalArgumentException("N must be greater than 0.");
         }
         gridUnion = new WeightedQuickUnionUF(N * N + 2);
+        gridBackup  = new WeightedQuickUnionUF(N * N + 1);
         arr = N;
         numOfOpen = 0;
         openArr = new boolean[N * N + 2];
         for (int col = 0; col < N; col++) {
             gridUnion.union(0, coordinate2Int(0, col));
+            gridUnion.union(N * N + 1, coordinate2Int(N - 1, col));
+            gridBackup.union(0, coordinate2Int(0, col));
         }
     }
 
@@ -44,6 +48,7 @@ public class Percolation {
         int index = coordinate2Int(row, col);
         if (boundChecker(row, col) && isOpen(row, col)) {
             gridUnion.union(index, ref);
+            gridBackup.union(index, ref);
         }
     }
 
@@ -58,9 +63,6 @@ public class Percolation {
             neighborCheck(row + 1, col, num);
             neighborCheck(row, col - 1, num);
             neighborCheck(row, col + 1, num);
-            if (row == arr - 1 && isFull(row, col)) {
-                gridUnion.union(num, arr * arr + 1);
-            }
         }
     }
 
@@ -75,7 +77,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validate(row, col);
         int num = coordinate2Int(row, col);
-        return isOpen(row, col) && gridUnion.connected(0, num);
+        return isOpen(row, col) && gridBackup.connected(0, num);
     }
 
     // Number of open sites.
