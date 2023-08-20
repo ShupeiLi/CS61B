@@ -87,6 +87,9 @@ public class Percolation {
 
     // Does the system percolate?
     public boolean percolates() {
+        if (arr == 1) {
+            return isOpen(0, 0);
+        }
         return gridUnion.connected(0, arr * arr + 1);
     }
 
