@@ -13,7 +13,7 @@ public class ComplexOomage implements Oomage {
     public int hashCode() {
         int total = 0;
         for (int x : params) {
-            total = total * 256;
+            total = total * 256; // Changing to 257 will pass the testWithDeadlyParams.
             total = total + x;
         }
         return total;
