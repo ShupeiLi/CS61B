@@ -174,8 +174,8 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     public T removeMin() {
         T smallestNode = peek();
         contents[1] = getNode(size);
-        size--;
         sink(1);
+        size--;
         return smallestNode;
     }
 
