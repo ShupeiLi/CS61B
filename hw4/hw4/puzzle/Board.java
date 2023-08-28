@@ -130,7 +130,7 @@ public class Board implements WorldState {
         return true;
     }
 
-    public int hashcode() {
+    public int hashCode() {
         return Objects.hash(this.toString());
     }
 
