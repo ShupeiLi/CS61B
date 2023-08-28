@@ -2,6 +2,8 @@ package hw4.puzzle;
 
 import edu.princeton.cs.algs4.Queue;
 
+import java.util.Objects;
+
 public class Board implements WorldState {
     private final int[][] tiles;
     private final int BLANK = 0;
@@ -18,7 +20,8 @@ public class Board implements WorldState {
     /** Returns value of tile at row i, column j (or 0 if blank). */
     public int tileAt(int i, int j) {
         if (i < 0 || j < 0 || i >= tiles.length || j >= tiles.length) {
-            throw new IndexOutOfBoundsException("The index should be an integer between 0 and N - 1.");
+            throw new IndexOutOfBoundsException("The index should be an integer "
+                    + "between 0 and N - 1.");
         }
         return tiles[i][j];
     }
@@ -69,8 +72,8 @@ public class Board implements WorldState {
         int count = 0;
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
-                if ((((i != tiles.length - 1) || (j != tiles.length - 1)) && (tiles[i][j] != tiles.length * i + j + 1))
-                || ((i == tiles.length - 1) && (j == tiles.length - 1) && tiles[i][j] != BLANK)) {
+                if (((i != tiles.length - 1) || (j != tiles.length - 1))
+                        && (tiles[i][j] != tiles.length * i + j + 1)) {
                     count++;
                 }
             }
@@ -84,9 +87,7 @@ public class Board implements WorldState {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
                 int number = tiles[i][j];
-                if (number == BLANK) {
-                    dist += Math.abs(tiles.length - 1 - i) + Math.abs(tiles.length - 1 - j);
-                } else {
+                if (number != BLANK) {
                     int row = (number - 1) / tiles.length;
                     int col = number - row * tiles.length - 1;
                     dist += Math.abs(i - row) + Math.abs(j - col);
@@ -129,6 +130,10 @@ public class Board implements WorldState {
         return true;
     }
 
+    public int hashcode() {
+        return Objects.hash(this.toString());
+    }
+
     /** Returns the string representation of the board. 
       * Uncomment this method. */
     public String toString() {
@@ -137,7 +142,7 @@ public class Board implements WorldState {
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+                s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
         }
