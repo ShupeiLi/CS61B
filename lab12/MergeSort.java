@@ -1,5 +1,7 @@
 import edu.princeton.cs.algs4.Queue;
 
+import java.util.Iterator;
+
 public class MergeSort {
     /**
      * Removes and returns the smallest item that is in q1 or q2.
@@ -34,8 +36,13 @@ public class MergeSort {
     /** Returns a queue of queues that each contain one item from items. */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
-        // Your code here!
-        return null;
+        Queue<Queue<Item>> queues = new Queue<>();
+        for (Item item : items) {
+            Queue<Item> oneItem = new Queue<>();
+            oneItem.enqueue(item);
+            queues.enqueue(oneItem);
+        }
+        return queues;
     }
 
     /**
@@ -53,14 +60,33 @@ public class MergeSort {
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
-        // Your code here!
-        return null;
+        Queue<Item> mergedQueue = new Queue<>();
+        while ((!q1.isEmpty()) || (!q2.isEmpty())) {
+            mergedQueue.enqueue(MergeSort.getMin(q1, q2));
+        }
+        return mergedQueue;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
-        // Your code here!
-        return items;
+        Queue<Queue<Item>> singleQueue = MergeSort.makeSingleItemQueues(items);
+        Queue<Item> sortedQueue = singleQueue.dequeue();
+        while (!singleQueue.isEmpty()) {
+            sortedQueue = MergeSort.mergeSortedQueues(sortedQueue, singleQueue.dequeue());
+        }
+        return sortedQueue;
+    }
+
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<String>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        System.out.println("Unsorted objects: " + students);
+        Queue<String> studentsSorted = MergeSort.mergeSort(students);
+        System.out.println("After merge sort:");
+        System.out.println("Unsorted objects: " + students);
+        System.out.println("Sorted objects: " + studentsSorted);
     }
 }
