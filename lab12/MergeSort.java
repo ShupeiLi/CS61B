@@ -70,21 +70,32 @@ public class MergeSort {
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
-        if (items.size() == 0) {
+        if (items.size() <= 1) {
             return items;
         }
-        Queue<Queue<Item>> singleQueue = MergeSort.makeSingleItemQueues(items);
-        Queue<Item> sortedQueue = singleQueue.dequeue();
-        while (!singleQueue.isEmpty()) {
-            sortedQueue = MergeSort.mergeSortedQueues(sortedQueue, singleQueue.dequeue());
+        //Queue<Queue<Item>> singleQueue = MergeSort.makeSingleItemQueues(items);
+        Queue<Item> left = new Queue<>();
+        Queue<Item> right = new Queue<>();
+        Iterator<Item> iter = items.iterator();
+        for (int i = 0; i < items.size(); i++) {
+            if (i < items.size() / 2) {
+                left.enqueue(iter.next());
+            } else {
+                right.enqueue(iter.next());
+            }
         }
-        return sortedQueue;
+        left = mergeSort(left);
+        right = mergeSort(right);
+        return mergeSortedQueues(left, right);
     }
 
     public static void main(String[] args) {
         Queue<String> students = new Queue<String>();
         students.enqueue("Alice");
         students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        students.enqueue("Peter");
+        students.enqueue("Bob");
         students.enqueue("Ethan");
         System.out.println("Unsorted objects: " + students);
         Queue<String> studentsSorted = MergeSort.mergeSort(students);
