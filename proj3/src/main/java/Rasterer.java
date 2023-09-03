@@ -60,7 +60,7 @@ public class Rasterer {
         // Validate parameters.
         if ((qLrLon <= MapServer.ROOT_ULLON)
                 || (qLrLat >= MapServer.ROOT_ULLAT)
-                || (qUlLon>= MapServer.ROOT_LRLON)
+                || (qUlLon >= MapServer.ROOT_LRLON)
                 || (qUlLat <= MapServer.ROOT_LRLAT)
                 || (qUlLon >= qLrLon)
                 || (qUlLat <= qLrLat)) {
@@ -84,11 +84,13 @@ public class Rasterer {
         double oneImgLength = DELTA / Math.pow(2, depth);
         double oneImgWidth = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / Math.pow(2, depth);
 
-        int rUlLonNum = (int) Math.floor((qUlLon - MapServer.ROOT_ULLON) / oneImgLength); // Row start
+        // Row start
+        int rUlLonNum = (int) Math.floor((qUlLon - MapServer.ROOT_ULLON) / oneImgLength);
         double rUlLon = MapServer.ROOT_ULLON + oneImgLength * rUlLonNum;
         int rLrLonNum = (int) Math.floor((MapServer.ROOT_LRLON - qLrLon) / oneImgLength);
         double rLrLon = MapServer.ROOT_LRLON - oneImgLength * rLrLonNum;
-        int rUlLatNum = (int) Math.floor((MapServer.ROOT_ULLAT - qUlLat) / oneImgWidth); // Column start
+        // Column start
+        int rUlLatNum = (int) Math.floor((MapServer.ROOT_ULLAT - qUlLat) / oneImgWidth);
         double rUlLat = MapServer.ROOT_ULLAT - oneImgWidth * rUlLatNum;
         int rLrLatNum = (int) Math.floor((qLrLat - MapServer.ROOT_LRLAT) / oneImgWidth);
         double rLrLat = MapServer.ROOT_LRLAT + oneImgWidth * rLrLatNum;
