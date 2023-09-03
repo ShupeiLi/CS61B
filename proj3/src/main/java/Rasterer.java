@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * This class provides all code necessary to take a query box and produce
@@ -8,9 +9,17 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
+    private final double[] depthLonDPP = new double[7];
+    private final double DELTA = MapServer.ROOT_LRLON - MapServer.ROOT_ULLON;
 
     public Rasterer() {
-        // YOUR CODE HERE
+        for (int i = 0; i < depthLonDPP.length; i++) {
+            depthLonDPP[i] = Rasterer.computeLonDPP(
+                    MapServer.ROOT_ULLON + DELTA / Math.pow(2, i),
+                    MapServer.ROOT_ULLON,
+                    MapServer.TILE_SIZE
+                    );
+        }
     }
 
     /**
@@ -42,11 +51,82 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // System.out.println(params);
+        double qLrLon = params.get("lrlon");
+        double qUlLon = params.get("ullon");
+        double qLrLat = params.get("lrlat");
+        double qUlLat = params.get("ullat");
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+
+        // Validate parameters.
+        if ((qLrLon <= MapServer.ROOT_ULLON)
+                || (qLrLat >= MapServer.ROOT_ULLAT)
+                || (qUlLon>= MapServer.ROOT_LRLON)
+                || (qUlLat <= MapServer.ROOT_LRLAT)
+                || (qUlLon >= qLrLon)
+                || (qUlLat <= qLrLat)) {
+            Random rand = new Random();
+            results.put("render_grid", null);
+            results.put("raster_ul_lon", rand.nextDouble());
+            results.put("raster_ul_lat", rand.nextDouble());
+            results.put("raster_lr_lon", rand.nextDouble());
+            results.put("raster_lr_lat", rand.nextDouble());
+            results.put("depth", 0);
+            results.put("query_success", false);
+            return results;
+        }
+
+        double userLonDPP = Rasterer.computeLonDPP(
+                qLrLon,
+                qUlLon,
+                params.get("w")
+        );
+        int depth = selectResolution(userLonDPP);
+        double oneImgLength = DELTA / Math.pow(2, depth);
+        double oneImgWidth = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / Math.pow(2, depth);
+
+        int rUlLonNum = (int) Math.floor((qUlLon - MapServer.ROOT_ULLON) / oneImgLength); // Row start
+        double rUlLon = MapServer.ROOT_ULLON + oneImgLength * rUlLonNum;
+        int rLrLonNum = (int) Math.floor((MapServer.ROOT_LRLON - qLrLon) / oneImgLength);
+        double rLrLon = MapServer.ROOT_LRLON - oneImgLength * rLrLonNum;
+        int rUlLatNum = (int) Math.floor((MapServer.ROOT_ULLAT - qUlLat) / oneImgWidth); // Column start
+        double rUlLat = MapServer.ROOT_ULLAT - oneImgWidth * rUlLatNum;
+        int rLrLatNum = (int) Math.floor((qLrLat - MapServer.ROOT_LRLAT) / oneImgWidth);
+        double rLrLat = MapServer.ROOT_LRLAT + oneImgWidth * rLrLatNum;
+
+        int rowEnd = (int) (Math.pow(2, depth) - rLrLonNum); // Exclusive
+        int colEnd = (int) (Math.pow(2, depth) - rLrLatNum);
+        String[][] grid = new String[colEnd - rUlLatNum][rowEnd - rUlLonNum];
+        for (int j = 0; j < (colEnd - rUlLatNum); j++) {
+            for (int i = 0; i < (rowEnd - rUlLonNum); i++) {
+                grid[j][i] = "d" + depth + "_x" + (i + rUlLonNum) + "_y" + (j + rUlLatNum) + ".png";
+            }
+        }
+
+        results.put("render_grid", grid);
+        results.put("raster_ul_lon", rUlLon);
+        results.put("raster_ul_lat", rUlLat);
+        results.put("raster_lr_lon", rLrLon);
+        results.put("raster_lr_lat", rLrLat);
+        results.put("depth", depth);
+        results.put("query_success", true);
         return results;
     }
 
+    /** Compute the longitudinal distance per pixel (LonDPP). */
+    private static double computeLonDPP(double lrLon, double ulLon, double width) {
+        return (lrLon - ulLon) / width;
+    }
+
+    /** Select the suitable resolution. */
+    private int selectResolution(double userLonDPP) {
+        for (int i = 0; i < depthLonDPP.length - 1; i++) {
+            if ((i == 0) && (userLonDPP >= depthLonDPP[i])) {
+                return 0;
+            }
+            if ((userLonDPP < depthLonDPP[i]) && (userLonDPP >= depthLonDPP[i + 1])) {
+                return i + 1;
+            }
+        }
+        return 7;
+    }
 }
