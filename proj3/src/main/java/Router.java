@@ -65,6 +65,9 @@ public class Router {
             }
             marked.add(v);
             v = fringe.poll();
+            if (v == null) {
+                break;
+            }
         }
 
         List<Long> path = new LinkedList<>();
