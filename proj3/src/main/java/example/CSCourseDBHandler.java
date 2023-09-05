@@ -40,7 +40,6 @@ public class CSCourseDBHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes)
         throws SAXException {
-
         if (qName.equals("course")) {
             activeState = "course";
             CSCourseDB.Course c = new CSCourseDB.Course(attributes.getValue("id"),

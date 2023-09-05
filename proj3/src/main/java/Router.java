@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +24,60 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        // Initialization.
+        for (GraphDB.Node p : g.nodes.values()) {
+            p.distTo = Double.MAX_VALUE;
+            p.estimateDist = Double.MAX_VALUE;
+        }
+        GraphDB.Node source = g.nodes.get(g.closest(stlon, stlat));
+        GraphDB.Node destination = g.nodes.get(g.closest(destlon, destlat));
+        source.distTo = 0;
+        source.estimateDist = 0;
+        PriorityQueue<GraphDB.Node> fringe = new PriorityQueue<>(new NodeComparator());
+        Map<Long, Long> edgeTo = new HashMap<>();
+        GraphDB.Node v = source;
+
+        while (!v.equals(destination)) {
+            for (GraphDB.Node w : v.neighbors) {
+                w.estimateDist = g.distance(destination.id, w.id);
+                double dist = v.distTo + g.distance(v.id, w.id);
+                if (dist <= w.distTo) {
+                    w.distTo = dist;
+                    if (edgeTo.containsKey(w.id)) {
+                        edgeTo.replace(w.id, v.id);
+                    } else {
+                        edgeTo.put(w.id, v.id);
+                    }
+                    fringe.add(w);
+                }
+            }
+            v = fringe.poll();
+        }
+
+        List<Long> path = new LinkedList<>();
+        long vId = destination.id;
+        while (vId != source.id) {
+            path.add(0, vId);
+            vId = edgeTo.get(vId);
+        }
+        path.add(0, source.id);
+        return path;
+    }
+
+    private static class NodeComparator implements Comparator<GraphDB.Node> {
+        @Override
+        public int compare(GraphDB.Node node1, GraphDB.Node node2) {
+            double node1Dist = node1.distTo + node1.estimateDist;
+            double node2Dist = node2.distTo + node2.estimateDist;
+            double diff = node1Dist - node2Dist;
+            if (diff < 0) {
+                return -1;
+            } else if (diff > 0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
     }
 
     /**
@@ -33,13 +85,50 @@ public class Router {
      * @param g The graph to use.
      * @param route The route to translate into directions. Each element
      *              corresponds to a node from the graph in the route.
-     * @return A list of NavigatiionDirection objects corresponding to the input
+     * @return A list of NavigationDirection objects corresponding to the input
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
-    }
+        List<NavigationDirection> navigationList = new ArrayList<>();
+        GraphDB.Node ptr = g.nodes.get(route.get(0));
+        GraphDB.Edge edge = ptr.edgeRef.getFirst();
 
+        for (int i = 1; i < route.size() - 1; i++) {
+            GraphDB.Node ptrNext = g.nodes.get(route.get(i));
+            GraphDB.Edge edgeNext = ptrNext.edgeRef.getFirst();
+            if (i == 1 || !edgeNext.equals(edge)) {
+                NavigationDirection direction = new NavigationDirection();
+                edge = edgeNext;
+                if (edge.name != null) {
+                    direction.way = edge.name;
+                }
+                direction.distance = g.distance(ptr.id, ptrNext.id);
+                if (i == 1) {
+                    direction.direction = NavigationDirection.START;
+                } else {
+                    double angle = g.bearing(route.get(i - 1), ptrNext.id);
+                    if (angle < -100) {
+                        direction.direction = NavigationDirection.SHARP_LEFT;
+                    } else if (angle >= -100 && angle < -30) {
+                        direction.direction = NavigationDirection.LEFT;
+                    } else if (angle >= -30 && angle < -15) {
+                        direction.direction = NavigationDirection.SLIGHT_LEFT;
+                    } else if (angle >= -15 && angle < 15) {
+                        direction.direction = NavigationDirection.STRAIGHT;
+                    } else if (angle >= 15 && angle < 30) {
+                        direction.direction = NavigationDirection.SLIGHT_RIGHT;
+                    } else if (angle >= 30 && angle < 100) {
+                        direction.direction = NavigationDirection.RIGHT;
+                    } else {
+                        direction.direction = NavigationDirection.SHARP_RIGHT;
+                    }
+                }
+                navigationList.add(direction);
+                ptr = ptrNext;
+            }
+        }
+        return navigationList;
+    }
 
     /**
      * Class to represent a navigation direction, which consists of 3 attributes:
