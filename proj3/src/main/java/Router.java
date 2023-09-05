@@ -1,4 +1,12 @@
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,23 +42,28 @@ public class Router {
         source.distTo = 0;
         source.estimateDist = 0;
         PriorityQueue<GraphDB.Node> fringe = new PriorityQueue<>(new NodeComparator());
+        Set<GraphDB.Node> marked = new HashSet<>();
         Map<Long, Long> edgeTo = new HashMap<>();
         GraphDB.Node v = source;
 
         while (!v.equals(destination)) {
-            for (GraphDB.Node w : v.neighbors) {
-                w.estimateDist = g.distance(destination.id, w.id);
-                double dist = v.distTo + g.distance(v.id, w.id);
-                if (dist <= w.distTo) {
-                    w.distTo = dist;
-                    if (edgeTo.containsKey(w.id)) {
-                        edgeTo.replace(w.id, v.id);
-                    } else {
-                        edgeTo.put(w.id, v.id);
+            if (!marked.contains(v)) {
+                marked.add(source);
+                for (GraphDB.Node w : v.neighbors) {
+                    w.estimateDist = g.distance(destination.id, w.id);
+                    double dist = v.distTo + g.distance(v.id, w.id);
+                    if (dist <= w.distTo) {
+                        w.distTo = dist;
+                        if (edgeTo.containsKey(w.id)) {
+                            edgeTo.replace(w.id, v.id);
+                        } else {
+                            edgeTo.put(w.id, v.id);
+                        }
+                        fringe.add(w);
                     }
-                    fringe.add(w);
                 }
             }
+            marked.add(v);
             v = fringe.poll();
         }
 
@@ -89,7 +102,7 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        List<NavigationDirection> navigationList = new ArrayList<>();
+        List<NavigationDirection> navigationList = new LinkedList<>();
         GraphDB.Node ptr = g.nodes.get(route.get(0));
         GraphDB.Edge edge = ptr.edgeRef.getFirst();
 
