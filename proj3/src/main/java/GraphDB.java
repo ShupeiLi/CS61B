@@ -1,3 +1,4 @@
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -6,10 +7,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -74,8 +72,24 @@ public class GraphDB {
         }
     }
 
+    /** Node of a trie used for autocompletion and search. */
+    static class TrieNode {
+        boolean exists;
+        List<Node> linkedNodes;
+        Map<String, TrieNode> nodeList;
+
+        public TrieNode() {
+            exists = false;
+            nodeList = new HashMap<>();
+            linkedNodes = new LinkedList<>();
+        }
+    }
+
     Map<Long, Node> nodes = new HashMap<>();
     Map<Long, Edge> edges = new HashMap<>();
+
+    /** The root of the trie. */
+    static TrieNode root = new TrieNode();
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -231,5 +245,90 @@ public class GraphDB {
      */
     double lat(long v) {
         return nodes.get(v).lat;
+    }
+
+    void putTrie(String key, Node node) {
+        putTrie(root, key, 0, node);
+    }
+
+    private TrieNode putTrie(TrieNode x, String key, int d, Node node) {
+        if (x == null) {
+            x = new TrieNode();
+        }
+        if (d == key.length()) {
+            x.exists = true;
+            x.linkedNodes.add(node);
+            return x;
+        }
+        String s = key.substring(d, d + 1);
+        x.nodeList.put(s, putTrie(x.nodeList.get(s), key, d + 1, node));
+        return x;
+    }
+
+    public static List<String> getLocationsByPrefix(String prefix) {
+        List<String> stringList = new ArrayList<>();
+        return GraphDB.searchTrie(stringList, prefix, false);
+    }
+
+    public static List<Map<String, Object>> getLocations(String locationName) {
+        List<Map<String, Object>> locationMap = new ArrayList<>();
+        GraphDB.searchTrie(locationMap, locationName, true);
+        List<Map<String, Object>> newMap = new ArrayList<>();
+        for (Map<String, Object> place : locationMap) {
+            if (cleanString((String) place.get("name")).equals(cleanString(locationName))) {
+                newMap.add(place);
+            }
+        }
+        return newMap;
+    }
+
+    static <K> List<K> searchTrie(List<K> kList, String key, boolean nodeLink) {
+        String currentPtr = "";
+        searchTrie(cleanString(key), kList, currentPtr, root, nodeLink, 0);
+        return kList;
+    }
+
+    private static <K> void searchTrie(String key, List<K> kList, String currentPtr, TrieNode x,
+                                       boolean nodeLink, int indexSub) {
+        if (cleanString(currentPtr).equals(key)) {
+            dfsTrie(kList, currentPtr, x, nodeLink);
+        } else if (x.nodeList.isEmpty()) {
+            return;
+        } else {
+            String subKey = key.substring(indexSub, indexSub + 1);
+            for (String k : x.nodeList.keySet()) {
+                String kClean = cleanString(k);
+                if (kClean.equals(subKey)) {
+                    searchTrie(key, kList, currentPtr.concat(k), x.nodeList.get(k), nodeLink, indexSub + 1);
+                }
+                if (kClean.isEmpty()) {
+                    searchTrie(key, kList, currentPtr.concat(k), x.nodeList.get(k), nodeLink, indexSub);
+                }
+            }
+        }
+    }
+
+    private static <K> void dfsTrie(List<K> kList, String currentPtr, TrieNode x, boolean nodeLink) {
+        if (x.exists) {
+            if (!nodeLink) {
+                kList.add((K) currentPtr);
+            } else {
+                for (Node p : x.linkedNodes) {
+                    Map<String, Object> nodeMap = new HashMap<>();
+                    nodeMap.put("lat", p.lat);
+                    nodeMap.put("lon", p.lon);
+                    nodeMap.put("name", p.name);
+                    nodeMap.put("id", p.id);
+                    kList.add((K) nodeMap);
+                }
+            }
+        }
+        if (x.nodeList.isEmpty()) {
+            return;
+        } else {
+            for (String k : x.nodeList.keySet()) {
+                dfsTrie(kList, currentPtr.concat(k), x.nodeList.get(k), nodeLink);
+            }
+        }
     }
 }
