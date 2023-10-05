@@ -15,9 +15,24 @@ public class RadixSort {
      *
      * @return String[] the sorted array
      */
+    private static final int LENGTH = 256;
+
     public static String[] sort(String[] asciis) {
-        // TODO: Implement LSD Sort
-        return null;
+        // Max length of strings
+        int maxLength = Integer.MIN_VALUE;
+        for (String str : asciis) {
+            if (str.length() > maxLength) {
+                maxLength = str.length();
+            }
+        }
+
+        // Sorting
+        for (int d = maxLength - 1; d >= 0; d--) {
+            asciis = sortHelperLSD(asciis, d);
+            //sortHelperLSD(asciis, d);
+        }
+
+        return asciis;
     }
 
     /**
@@ -25,10 +40,65 @@ public class RadixSort {
      * Strings based off characters at a specific index.
      * @param asciis Input array of Strings
      * @param index The position to sort the Strings on.
+     * Counting sort implementation
      */
-    private static void sortHelperLSD(String[] asciis, int index) {
+    private static String[] sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        return;
+        int[] counts = new int[LENGTH];
+        for (String str : asciis) {
+            counts[padding(str, index)]++;
+        }
+
+        int[] starts = new int[LENGTH];
+        int pos = 0;
+        for (int i = 0; i < starts.length; i += 1) {
+            starts[i] = pos;
+            pos += counts[i];
+        }
+
+        String[] sorted = new String[asciis.length];
+        for (String str : asciis) {
+            int idx = padding(str, index);
+            sorted[starts[idx]] = str;
+            starts[idx]++;
+        }
+        return sorted;
+    }
+
+    /** Quicksort implementation: Have bugs.
+    private static void sortHelperLSD(String[] asciis, int index) {
+        quicksort(asciis, 0, asciis.length - 1, index);
+    }
+
+    private static void quicksort(String[] asciis, int start, int end, int index) {
+        if (start < end) {
+            int pivot = padding(asciis[end], index);
+            int i = start - 1;
+            String temp;
+            for (int j = start; j < end; j++) {
+                if (padding(asciis[j], index) <= pivot) {
+                    i++;
+                    temp = asciis[i];
+                    asciis[i] = asciis[j];
+                    asciis[j] = temp;
+                }
+            }
+            i++;
+            temp = asciis[i];
+            asciis[i] = asciis[end];
+            asciis[end] = temp;
+            quicksort(asciis, start, i - 1, index);
+            quicksort(asciis, i + 1, end, index);
+        }
+    }
+     */
+
+    private static int padding(String str, int index) {
+        if (str.length() >= index + 1) {
+            return str.charAt(index);
+        } else {
+            return 0;
+        }
     }
 
     /**
