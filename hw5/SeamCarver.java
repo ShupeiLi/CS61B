@@ -3,8 +3,8 @@ import java.awt.*;
 
 
 public class SeamCarver {
-    private Picture picture;
-    private double[][] energyArray;
+    private final Picture picture;
+    private final double[][] energyArray;
 
     public SeamCarver(Picture picture) {
         this.picture = picture;
@@ -90,18 +90,22 @@ public class SeamCarver {
         return findHorizontalSeamHelper(height(), width(), resizedEnergy);
     }
 
-    private int[] findHorizontalSeamHelper(int height, int width, double[][] energyArray) {
+    private int[] findHorizontalSeamHelper(int height, int width, double[][] energyArr) {
         double[] costs = new double[width];
         int[][] routes = new int[width][height];
         double[] routesCosts = new double[width];
-        System.arraycopy(energyArray[0], 0, costs, 0, width);
+        System.arraycopy(energyArr[0], 0, costs, 0, width);
         for (int i = 1; i < height + 1; i++) {
             double[] copy = new double[width];
             System.arraycopy(costs, 0, copy, 0, width);
             for (int j = 0; j < width; j++) {
                 double minCost = Double.MAX_VALUE;
                 int minIndex = 0;
-                for (int k = Math.max(0, j - 1); k < Math.min(width, j + 2); k++) {
+                int lastStep = j;
+                if (i >= 2) {
+                    lastStep = routes[j][i - 2];
+                }
+                for (int k = Math.max(0, lastStep - 1); k < Math.min(width, lastStep + 2); k++) {
                     double current = copy[k];
                     if (current < minCost) {
                         minCost = current;
@@ -109,9 +113,9 @@ public class SeamCarver {
                     }
                 }
                 routes[j][i - 1] = minIndex;
-                routesCosts[j] +=energyArray[i - 1][minIndex];
+                routesCosts[j] += energyArr[i - 1][minIndex];
                 if (i < height) {
-                    costs[j] = minCost + energyArray[i][j];
+                    costs[j] = minCost + energyArr[i][j];
                 }
             }
         }
