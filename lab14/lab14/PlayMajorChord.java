@@ -11,7 +11,7 @@ public class PlayMajorChord {
         Generator g2 = new SineWaveGenerator(659.25);
         Generator g3 = new SineWaveGenerator(783.99);
 
-        ArrayList<Generator> generators = new ArrayList<Generator>();
+        ArrayList<Generator> generators = new ArrayList<>();
         generators.add(g1);
         generators.add(g2);
         generators.add(g3);
