@@ -8,10 +8,10 @@ public class SeamCarver {
 
     public SeamCarver(Picture picture) {
         this.picture = picture;
-        energyArray = new double[width()][height()];
+        energyArray = new double[height()][width()];
         for (int i = 0; i < energyArray.length; i++) {
             for (int j = 0; j < energyArray[i].length; j++) {
-                energyArray[i][j] = energy(i, j);
+                energyArray[i][j] = energy(j, i);
             }
         }
     }
@@ -76,59 +76,64 @@ public class SeamCarver {
 
     /** Sequence of indices for horizontal seam */
     public int[] findHorizontalSeam() {
-        return findHorizontalSeamHelper(width(), height(), energyArray);
+        double[][] resizedEnergy = new double[width()][height()];
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                resizedEnergy[i][j] = energyArray[j][i];
+            }
+        }
+        return findVerticalSeamHelper(width(), height(), resizedEnergy);
     }
 
     /** Sequence of indices for vertical seam */
     public int[] findVerticalSeam() {
-        double[][] resizedEnergy = new double[height()][width()];
-        for (int i = 0; i < width(); i++) {
-            for (int j = 0; j < height(); j++) {
-                resizedEnergy[j][i] = energyArray[i][j];
-            }
-        }
-        return findHorizontalSeamHelper(height(), width(), resizedEnergy);
+        return findVerticalSeamHelper(height(), width(), energyArray);
     }
 
-    private int[] findHorizontalSeamHelper(int height, int width, double[][] energyArr) {
-        double[] costs = new double[width];
-        int[][] routes = new int[width][height];
-        double[] routesCosts = new double[width];
-        System.arraycopy(energyArr[0], 0, costs, 0, width);
-        for (int i = 1; i < height + 1; i++) {
-            double[] copy = new double[width];
-            System.arraycopy(costs, 0, copy, 0, width);
-            for (int j = 0; j < width; j++) {
-                double minCost = Double.MAX_VALUE;
-                int minIndex = 0;
-                int lastStep = j;
-                if (i >= 2) {
-                    lastStep = routes[j][i - 2];
-                }
-                for (int k = Math.max(0, lastStep - 1); k < Math.min(width, lastStep + 2); k++) {
-                    double current = copy[k];
-                    if (current < minCost) {
-                        minCost = current;
-                        minIndex = k;
+    private int[] findVerticalSeamHelper(int width, int height, double[][] energyArr) {
+        double[][] costs = new double[width][height];
+        System.arraycopy(energyArr[0], 0, costs[0], 0, height);
+        for (int i = 1; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                double left = (j == 0) ? Double.MAX_VALUE : costs[i - 1][j - 1];
+                double right = (j == (height - 1)) ? Double.MAX_VALUE : costs[i - 1][j + 1];
+                costs[i][j] = Math.min(Math.min(left, costs[i - 1][j]), right) + energyArr[i][j];
+            }
+        }
+
+        int[] route = new int[width];
+        for (int i = width - 1; i >= 0; i--) {
+            double minCost = Double.MAX_VALUE;
+            int minIndex = 0;
+            if (i == width - 1) {
+                for (int j = 0; j < height; j++) {
+                    if (costs[i][j] < minCost) {
+                        minCost = costs[i][j];
+                        minIndex = j;
                     }
                 }
-                routes[j][i - 1] = minIndex;
-                routesCosts[j] += energyArr[i - 1][minIndex];
-                if (i < height) {
-                    costs[j] = minCost + energyArr[i][j];
+            } else {
+                int lastStep = route[i + 1];
+                double left = (lastStep == 0) ? Double.MAX_VALUE : costs[i][lastStep - 1];
+                double middle = costs[i][lastStep];
+                double right = (lastStep == (height - 1)) ? Double.MAX_VALUE : costs[i][lastStep + 1];
+                if (left > right) {
+                    if (right > middle) {
+                        minIndex = lastStep;
+                    } else {
+                        minIndex = lastStep + 1;
+                    }
+                } else {
+                    if (left > middle) {
+                        minIndex = lastStep;
+                    } else {
+                        minIndex = lastStep - 1;
+                    }
                 }
             }
+            route[i] = minIndex;
         }
-        double minCost = Double.MAX_VALUE;
-        int minIndex = 0;
-        for (int i = 0; i < width; i++) {
-            double current = routesCosts[i];
-            if (current < minCost) {
-                minCost = current;
-                minIndex = i;
-            }
-        }
-        return routes[minIndex];
+        return route;
     }
 
     private void checkSeam(int[] seam) {
