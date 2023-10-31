@@ -1,5 +1,5 @@
 import edu.princeton.cs.algs4.Picture;
-import java.awt.*;
+import java.awt.Color;
 
 
 public class SeamCarver {
@@ -7,7 +7,7 @@ public class SeamCarver {
     private final double[][] energyArray;
 
     public SeamCarver(Picture picture) {
-        this.picture = picture;
+        this.picture = new Picture(picture);
         energyArray = new double[height()][width()];
         for (int i = 0; i < energyArray.length; i++) {
             for (int j = 0; j < energyArray[i].length; j++) {
