@@ -139,10 +139,11 @@ public class SeamCarver {
 
     private void checkSeam(int[] seam) {
         int previous = seam[0];
-        for (int item : seam) {
-            if (Math.abs(item - previous) > 1) {
+        for (int i = 1; i < seam.length; i++) {
+            if (Math.abs(seam[i] - previous) > 1) {
                 throw new IllegalArgumentException("The seam is invalid.");
             }
+            previous = seam[i];
         }
     }
 
