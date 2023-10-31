@@ -18,7 +18,7 @@ public class SeamCarver {
 
     /** Current picture */
     public Picture picture() {
-        return picture;
+        return new Picture(picture);
     }
 
     /** Width of current picture */
@@ -116,7 +116,8 @@ public class SeamCarver {
                 int lastStep = route[i + 1];
                 double left = (lastStep == 0) ? Double.MAX_VALUE : costs[i][lastStep - 1];
                 double middle = costs[i][lastStep];
-                double right = (lastStep == (height - 1)) ? Double.MAX_VALUE : costs[i][lastStep + 1];
+                double right = (lastStep == (height - 1)
+                ) ? Double.MAX_VALUE : costs[i][lastStep + 1];
                 if (left > right) {
                     if (right > middle) {
                         minIndex = lastStep;
@@ -148,12 +149,12 @@ public class SeamCarver {
     /** Remove horizontal seam from picture */
     public void removeHorizontalSeam(int[] seam) {
         checkSeam(seam);
-        SeamRemover.removeHorizontalSeam(picture, seam);
+        SeamRemover.removeHorizontalSeam(picture(), seam);
     }
 
     /** Remove vertical seam from picture */
     public void removeVerticalSeam(int[] seam) {
         checkSeam(seam);
-        SeamRemover.removeVerticalSeam(picture, seam);
+        SeamRemover.removeVerticalSeam(picture(), seam);
     }
 }
